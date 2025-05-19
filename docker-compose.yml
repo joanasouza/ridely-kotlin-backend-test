@@ -1,0 +1,13 @@
+version: '3.1'
+
+services:
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD:-ridely@123}
+      MYSQL_DATABASE: ${DATABASE_NAME:-ridely}
+      MYSQL_USER: ${DATABASE_USERNAME:-ridely}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD:-ridely@123}
+    ports:
+      - ${DATABASE_PORT:-3306}:3306
