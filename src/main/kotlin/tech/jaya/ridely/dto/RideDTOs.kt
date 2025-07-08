@@ -1,9 +1,6 @@
-package tech.jaya.ridely.controller
+package tech.jaya.ridely.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import tech.jaya.ridely.model.Driver
-import tech.jaya.ridely.model.Ride
-import tech.jaya.ridely.model.Status
 import java.math.BigDecimal
 
 class PassengerRequest(
@@ -13,9 +10,16 @@ class PassengerRequest(
     val email: String
 )
 
-class RequestDriver(
+class RequestRideEstimate(
     @JsonProperty(required = true)
-    val passenger: PassengerRequest,
+    val pickUp: String,
+    @JsonProperty(required = true)
+    val dropOff: String
+)
+
+class RequestDriver(
+//    @JsonProperty(required = true)
+//    val passenger: PassengerRequest,
     @JsonProperty(required = true)
     val pickUp: String,
     @JsonProperty(required = true)
@@ -24,8 +28,8 @@ class RequestDriver(
     fun toRide(driver: Driver) = Ride(
         pickUp = this.pickUp,
         dropOff = this.dropOff,
-        passengerName = passenger.name,
-        passengerEmail = passenger.email,
+//        passengerName = passenger.name,
+//        passengerEmail = passenger.email,
         driver = driver
     )
 }
