@@ -17,6 +17,8 @@ import tech.jaya.ridely.dto.RequestDriver
 import tech.jaya.ridely.dto.RequestDriverResponse
 import tech.jaya.ridely.dto.RequestRideEstimate
 import tech.jaya.ridely.dto.RideEstimateDTO
+import tech.jaya.ridely.exception.DriverUnavailable
+import tech.jaya.ridely.exception.RideNotFoundException
 import tech.jaya.ridely.repository.DriverRepo
 import tech.jaya.ridely.repository.RideRepo
 import tech.jaya.ridely.service.RideService

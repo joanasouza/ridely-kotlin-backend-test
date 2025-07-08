@@ -1,6 +1,7 @@
-package tech.jaya.ridely.model
+package tech.jaya.ridely.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import tech.jaya.ridely.model.Driver
 
 data class DriverCreation(
     @JsonProperty(required = true)

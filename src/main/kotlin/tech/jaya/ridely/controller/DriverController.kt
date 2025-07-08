@@ -8,6 +8,12 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import tech.jaya.ridely.dto.AcceptResponse
+import tech.jaya.ridely.dto.DriverCreation
+import tech.jaya.ridely.dto.DriverResponse
+import tech.jaya.ridely.dto.toResponse
+import tech.jaya.ridely.exception.DriverNotFound
+import tech.jaya.ridely.exception.RideNotFoundException
 import tech.jaya.ridely.repository.DriverRepo
 import tech.jaya.ridely.repository.RideRepo
 
