@@ -7,3 +7,5 @@ class DriverNotFound(message: String) : Exception(message)
 class RideNotFoundException(message: String) : Exception(message)
 
 class RideInvalidState(message: String) : Exception(message)
+
+class GoogleMapsException(message: String, cause: Throwable? = null) : RuntimeException(message, cause)
