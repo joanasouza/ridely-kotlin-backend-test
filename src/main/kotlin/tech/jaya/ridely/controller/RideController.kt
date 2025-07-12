@@ -1,5 +1,7 @@
 package tech.jaya.ridely.controller
 
+import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -16,24 +18,27 @@ import tech.jaya.ridely.dto.RefuseResponse
 import tech.jaya.ridely.dto.RequestDriver
 import tech.jaya.ridely.dto.RequestDriverResponse
 import tech.jaya.ridely.dto.RequestRideEstimate
-import tech.jaya.ridely.dto.RideEstimateDTO
+import tech.jaya.ridely.dto.RideEstimateResponseDTO
 import tech.jaya.ridely.exception.DriverUnavailable
-import tech.jaya.ridely.exception.RideNotFoundException
 import tech.jaya.ridely.repository.DriverRepo
 import tech.jaya.ridely.repository.RideRepo
 import tech.jaya.ridely.service.RideService
+import tech.jaya.ridely.usecase.RideUseCase
 
 @RestController
 @RequestMapping("/rides")
+@Tag(name = "Rides", description = "Endpoints for managing rides")
 class RideController(
     private val rideRepo: RideRepo,
     private val driverRepo: DriverRepo,
-    private val rideService: RideService
+    private val rideService: RideService,
+    private val rideUseCase: RideUseCase
+
 ) {
 
     @PostMapping("/estimate")
-    fun estimateRide(@RequestBody req: RequestRideEstimate): RideEstimateDTO {
-        return rideService.estimateRide(req)
+    fun estimate(@Valid @RequestBody req: RequestRideEstimate): RideEstimateResponseDTO {
+        return rideService.estimate(req)
     }
 
     @PostMapping("/request-driver")
@@ -48,16 +53,14 @@ class RideController(
 
     @PostMapping("/refuse-ride")
     fun refuseRide(@RequestBody req: ActionRideRequest): RefuseResponse {
-        val id = req.id
-        val ride = rideRepo.findById(id).orElseThrow { RideNotFoundException("No ride found with id $id") }
+        val ride = rideUseCase.findRideById(req.id)
         ride.refuse()
         return RefuseResponse.fromRide(rideRepo.save(ride))
     }
 
     @PostMapping("/cancel-ride")
     fun deleteRide(@RequestBody req: ActionRideRequest): CancelResponse {
-        val id = req.id
-        val ride = rideRepo.findById(id).orElseThrow { RideNotFoundException("No ride found with id $id") }
+        val ride = rideUseCase.findRideById(req.id)
         ride.cancel()
         return CancelResponse.fromRide(rideRepo.save(ride))
     }
@@ -65,15 +68,14 @@ class RideController(
     @PostMapping("/finish-ride")
     fun finishRide(@RequestBody req: FinishRideRequest): FinishResponse {
         val (id, price) = req
-        val ride = rideRepo.findById(id).orElseThrow { RideNotFoundException("No ride found with id $id") }
+        val ride = rideUseCase.findRideById(id)
         ride.complete(price)
         return FinishResponse.fromRide(rideRepo.save(ride))
     }
 
     @PostMapping("/accept-ride")
     fun acceptRide(@RequestBody req: ActionRideRequest): AcceptResponse {
-        val id = req.id
-        val ride = rideRepo.findById(id).orElseThrow { RideNotFoundException("No ride found with id $id") }
+        val ride = rideUseCase.findRideById(req.id)
         ride.accept()
         return AcceptResponse.fromRide(rideRepo.save(ride))
     }
