@@ -19,18 +19,15 @@ import tech.jaya.ridely.dto.RequestDriver
 import tech.jaya.ridely.dto.RequestDriverResponse
 import tech.jaya.ridely.dto.RequestRideEstimate
 import tech.jaya.ridely.dto.RideEstimateResponseDTO
-import tech.jaya.ridely.exception.DriverUnavailable
-import tech.jaya.ridely.repository.DriverRepo
-import tech.jaya.ridely.repository.RideRepo
 import tech.jaya.ridely.service.RideService
+import tech.jaya.ridely.usecase.DriverUseCase
 import tech.jaya.ridely.usecase.RideUseCase
 
 @RestController
 @RequestMapping("/rides")
 @Tag(name = "Rides", description = "Endpoints for managing rides")
 class RideController(
-    private val rideRepo: RideRepo,
-    private val driverRepo: DriverRepo,
+    private val driverUseCase: DriverUseCase,
     private val rideService: RideService,
     private val rideUseCase: RideUseCase
 
@@ -43,26 +40,24 @@ class RideController(
 
     @PostMapping("/request-driver")
     fun requestDriver(@RequestBody req: RequestDriver): RequestDriverResponse {
-        val driver = driverRepo.findAvailableDriver().orElseThrow {
-            throw DriverUnavailable("We do not have drivers available")
-        }
+        val driver = driverUseCase.findAvailableDriver()
         val ride = req.toRide(driver)
         ride.request(driver)
-        return RequestDriverResponse.fromRide(rideRepo.save(ride))
+        return RequestDriverResponse.fromRide(rideUseCase.save(ride))
     }
 
     @PostMapping("/refuse-ride")
     fun refuseRide(@RequestBody req: ActionRideRequest): RefuseResponse {
         val ride = rideUseCase.findRideById(req.id)
         ride.refuse()
-        return RefuseResponse.fromRide(rideRepo.save(ride))
+        return RefuseResponse.fromRide(rideUseCase.save(ride))
     }
 
     @PostMapping("/cancel-ride")
     fun deleteRide(@RequestBody req: ActionRideRequest): CancelResponse {
         val ride = rideUseCase.findRideById(req.id)
         ride.cancel()
-        return CancelResponse.fromRide(rideRepo.save(ride))
+        return CancelResponse.fromRide(rideUseCase.save(ride))
     }
 
     @PostMapping("/finish-ride")
@@ -70,19 +65,19 @@ class RideController(
         val (id, price) = req
         val ride = rideUseCase.findRideById(id)
         ride.complete(price)
-        return FinishResponse.fromRide(rideRepo.save(ride))
+        return FinishResponse.fromRide(rideUseCase.save(ride))
     }
 
     @PostMapping("/accept-ride")
     fun acceptRide(@RequestBody req: ActionRideRequest): AcceptResponse {
         val ride = rideUseCase.findRideById(req.id)
         ride.accept()
-        return AcceptResponse.fromRide(rideRepo.save(ride))
+        return AcceptResponse.fromRide(rideUseCase.save(ride))
     }
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long): ResponseEntity<Unit> {
-        return rideRepo.deleteById(id).let {
+        return rideUseCase.deleteById(id).let {
             ResponseEntity.noContent().build()
         }
     }

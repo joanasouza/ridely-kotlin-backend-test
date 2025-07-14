@@ -1,6 +1,7 @@
 package tech.jaya.ridely.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import jakarta.validation.constraints.NotBlank
 import tech.jaya.ridely.model.Driver
 import tech.jaya.ridely.model.Ride
 import tech.jaya.ridely.model.Status
@@ -15,8 +16,11 @@ class PassengerRequest(
 
 class RequestRideEstimate(
     @JsonProperty(required = true)
+    @field:NotBlank(message = "Pick up location cannot be blank")
     val pickUp: String,
+
     @JsonProperty(required = true)
+    @field:NotBlank(message = "Pick up location cannot be blank")
     val dropOff: String
 )
 

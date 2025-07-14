@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import tech.jaya.ridely.client.GoogleMapsClient
 import tech.jaya.ridely.dto.RequestRideEstimate
 import tech.jaya.ridely.dto.RouteInfo
+import tech.jaya.ridely.usecase.EstimateRideUseCase
 
 
 @ActiveProfiles("test")
@@ -17,20 +18,21 @@ class RideServiceTest {
     @Test
     fun shouldEstimateRideCorrectly() {
         val googleMapsClient = mockk<GoogleMapsClient>()
-        val rideService = RideService(googleMapsClient)
+        val estimateRideUseCase = mockk<EstimateRideUseCase>()
 
         val request = RequestRideEstimate(
             pickUp = "Pituba Ville", dropOff = "Salvador Shopping",
-            )
-        every { googleMapsClient.getRouteInfo("Pituba Ville", "Salvador Shopping")
+        )
+        every {
+            googleMapsClient.getRouteInfo(any(), any())
         } returns RouteInfo(
             estimatedTimeMinute = 10,
-            distanceKm = 10.0
+            distanceKm = 10
         )
-        val estimatedRide = rideService.estimateRide(request)
+        val estimatedRide = estimateRideUseCase.extractRideInfo(request)
 
-        assertEquals(10, estimatedRide.estimatedTime)
-        assertEquals(10.0, estimatedRide.distanceKm)
+        assertEquals(10, estimatedRide.estimatedTimeMinute)
+        assertEquals(10, estimatedRide.distanceKm)
         assertEquals(16.01, estimatedRide.price)
 
     }
